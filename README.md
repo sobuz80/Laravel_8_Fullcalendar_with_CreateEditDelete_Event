@@ -1,62 +1,571 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+Step 2: Create Migration and Model
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+In this step we have to create migration for events table using Laravel 8 php artisan command, so first fire bellow command:
 
-## About Laravel
+php artisan make:migration create_events_table
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+After this command you will find one file in following path "database/migrations" and you have to put bellow code in your migration file for create events table.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+<?php
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+  
 
-## Learning Laravel
+use Illuminate\Database\Migrations\Migration;
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+use Illuminate\Database\Schema\Blueprint;
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+use Illuminate\Support\Facades\Schema;
 
-## Laravel Sponsors
+  
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+class CreateEventsTable extends Migration
 
-### Premium Partners
+{
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
+    /**
 
-## Contributing
+     * Run the migrations.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+     *
 
-## Code of Conduct
+     * @return void
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+     */
 
-## Security Vulnerabilities
+    public function up()
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+    {
 
-## License
+        Schema::create('events', function (Blueprint $table) {
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+            $table->id();
+
+            $table->string('title');
+
+            $table->date('start');
+
+            $table->date('end');
+
+            $table->timestamps();
+
+        });
+
+    }  
+
+  
+
+    /** 
+
+     * Reverse the migrations.
+
+     *
+
+     * @return void
+
+     */
+
+    public function down()
+
+    {
+
+        Schema::dropIfExists('events');
+
+    }
+
+}
+
+Then after, simply run migration:
+
+php artisan migrate
+
+After create "events" table you should create Event model for items, so first create file in this path "app/Models/Event.php" and put bellow content in Event.php file:
+
+app/Models/Event.php
+
+<?php
+
+  
+
+namespace App\Models;
+
+  
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+
+use Illuminate\Database\Eloquent\Model;
+
+  
+
+class Event extends Model
+
+{
+
+    use HasFactory;
+
+  
+
+    protected $fillable = [
+
+        'title', 'start', 'end'
+
+    ];
+
+}
+
+Read Also: Laravel 8 CRUD Application Tutorial for Beginners
+
+Step 3: Create Routes
+
+In this step we will add routes and controller file so first add bellow route in your routes.php file.
+
+routes/web.php
+
+<?php
+
+  
+
+use Illuminate\Support\Facades\Route;
+
+  
+
+use App\Http\Controllers\FullCalenderController;
+
+  
+
+/*
+
+|--------------------------------------------------------------------------
+
+| Web Routes
+
+|--------------------------------------------------------------------------
+
+|
+
+| Here is where you can register web routes for your application. These
+
+| routes are loaded by the RouteServiceProvider within a group which
+
+| contains the "web" middleware group. Now create something great!
+
+|
+
+*/
+
+  
+
+Route::get('fullcalender', [FullCalenderController::class, 'index']);
+
+Route::post('fullcalenderAjax', [FullCalenderController::class, 'ajax']);
+
+Step 4: Create Controller File
+
+Now require to create new FullCalenderController for index and ajax method so first run bellow command :
+
+php artisan make:controller FullCalenderController
+
+After this command you can find FullCalenderController.php file in your app/Http/Controllers directory. open FullCalenderController.php file and put bellow code in that file.
+
+app/Http/Controllers/FullCalenderController.php
+
+<?php
+
+  
+
+namespace App\Http\Controllers;
+
+  
+
+use Illuminate\Http\Request;
+
+use App\Models\Event;
+
+  
+
+class FullCalenderController extends Controller
+
+{
+
+    /**
+
+     * Write code on Method
+
+     *
+
+     * @return response()
+
+     */
+
+    public function index(Request $request)
+
+    {
+
+  
+
+        if($request->ajax()) {
+
+       
+
+             $data = Event::whereDate('start', '>=', $request->start)
+
+                       ->whereDate('end',   '<=', $request->end)
+
+                       ->get(['id', 'title', 'start', 'end']);
+
+  
+
+             return response()->json($data);
+
+        }
+
+  
+
+        return view('fullcalender');
+
+    }
+
+ 
+
+    /**
+
+     * Write code on Method
+
+     *
+
+     * @return response()
+
+     */
+
+    public function ajax(Request $request)
+
+    {
+
+ 
+
+        switch ($request->type) {
+
+           case 'add':
+
+              $event = Event::create([
+
+                  'title' => $request->title,
+
+                  'start' => $request->start,
+
+                  'end' => $request->end,
+
+              ]);
+
+ 
+
+              return response()->json($event);
+
+             break;
+
+  
+
+           case 'update':
+
+              $event = Event::find($request->id)->update([
+
+                  'title' => $request->title,
+
+                  'start' => $request->start,
+
+                  'end' => $request->end,
+
+              ]);
+
+ 
+
+              return response()->json($event);
+
+             break;
+
+  
+
+           case 'delete':
+
+              $event = Event::find($request->id)->delete();
+
+  
+
+              return response()->json($event);
+
+             break;
+
+             
+
+           default:
+
+             # code...
+
+             break;
+
+        }
+
+    }
+
+}
+
+Step 5: Create Blade File
+
+Ok, in this last step we will create fullcalender.blade.php file for display fullcalender and we will write js code for crud app. So first create fullcalender.blade.php file and put bellow code:
+
+resources/views/fullcalender.blade.php
+
+Read Also: Laravel 8 Mailgun Integration Example
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <title>Laravel Fullcalender Tutorial Tutorial - ItSolutionStuff.com</title>
+
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+
+  
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.css" />
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.js"></script>
+
+  
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css" />
+
+</head>
+
+<body>
+
+  
+
+<div class="container">
+
+    <h1>Laravel FullCalender Tutorial Example - ItSolutionStuff.com</h1>
+
+    <div id='calendar'></div>
+
+</div>
+
+   
+
+<script>
+
+$(document).ready(function () {
+
+   
+
+var SITEURL = "{{ url('/') }}";
+
+  
+
+$.ajaxSetup({
+
+    headers: {
+
+    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+
+    }
+
+});
+
+  
+
+var calendar = $('#calendar').fullCalendar({
+
+                    editable: true,
+
+                    events: SITEURL + "/fullcalender",
+
+                    displayEventTime: false,
+
+                    editable: true,
+
+                    eventRender: function (event, element, view) {
+
+                        if (event.allDay === 'true') {
+
+                                event.allDay = true;
+
+                        } else {
+
+                                event.allDay = false;
+
+                        }
+
+                    },
+
+                    selectable: true,
+
+                    selectHelper: true,
+
+                    select: function (start, end, allDay) {
+
+                        var title = prompt('Event Title:');
+
+                        if (title) {
+
+                            var start = $.fullCalendar.formatDate(start, "Y-MM-DD");
+
+                            var end = $.fullCalendar.formatDate(end, "Y-MM-DD");
+
+                            $.ajax({
+
+                                url: SITEURL + "/fullcalenderAjax",
+
+                                data: {
+
+                                    title: title,
+
+                                    start: start,
+
+                                    end: end,
+
+                                    type: 'add'
+
+                                },
+
+                                type: "POST",
+
+                                success: function (data) {
+
+                                    displayMessage("Event Created Successfully");
+
+  
+
+                                    calendar.fullCalendar('renderEvent',
+
+                                        {
+
+                                            id: data.id,
+
+                                            title: title,
+
+                                            start: start,
+
+                                            end: end,
+
+                                            allDay: allDay
+
+                                        },true);
+
+  
+
+                                    calendar.fullCalendar('unselect');
+
+                                }
+
+                            });
+
+                        }
+
+                    },
+
+                    eventDrop: function (event, delta) {
+
+                        var start = $.fullCalendar.formatDate(event.start, "Y-MM-DD");
+
+                        var end = $.fullCalendar.formatDate(event.end, "Y-MM-DD");
+
+  
+
+                        $.ajax({
+
+                            url: SITEURL + '/fullcalenderAjax',
+
+                            data: {
+
+                                title: event.title,
+
+                                start: start,
+
+                                end: end,
+
+                                id: event.id,
+
+                                type: 'update'
+
+                            },
+
+                            type: "POST",
+
+                            success: function (response) {
+
+                                displayMessage("Event Updated Successfully");
+
+                            }
+
+                        });
+
+                    },
+
+                    eventClick: function (event) {
+
+                        var deleteMsg = confirm("Do you really want to delete?");
+
+                        if (deleteMsg) {
+
+                            $.ajax({
+
+                                type: "POST",
+
+                                url: SITEURL + '/fullcalenderAjax',
+
+                                data: {
+
+                                        id: event.id,
+
+                                        type: 'delete'
+
+                                },
+
+                                success: function (response) {
+
+                                    calendar.fullCalendar('removeEvents', event.id);
+
+                                    displayMessage("Event Deleted Successfully");
+
+                                }
+
+                            });
+
+                        }
+
+                    }
+
+ 
+
+                });
+
+ 
+
+});
+
+ 
+
+function displayMessage(message) {
+
+    toastr.success(message, 'Event');
+
+} 
+
+  
+
+</script>
+
+  
+
+</body>
+
+</html>
